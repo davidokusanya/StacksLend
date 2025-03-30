@@ -36,3 +36,45 @@
 (define-constant MAX-COLLATERAL-RATIO u500) ;; Maximum allowed collateral ratio (500%)
 (define-constant MIN-COLLATERAL-RATIO u110) ;; Minimum required collateral ratio (110%)
 (define-constant MAX-PROTOCOL-FEE u10)      ;; Maximum protocol fee (10%)
+
+;; Data Variables
+(define-data-var minimum-collateral-ratio uint u150) ;; Default: 150%
+(define-data-var liquidation-threshold uint u130)    ;; Default: 130%
+(define-data-var protocol-fee uint u1)               ;; Default: 1%
+(define-data-var total-deposits uint u0)
+(define-data-var total-borrows uint u0)
+
+;; Data Maps
+;; Loan Data Structure
+(define-map loans
+    { loan-id: uint }
+    {
+        borrower: principal,
+        collateral-amount: uint,
+        borrowed-amount: uint,
+        interest-rate: uint,
+        start-height: uint,
+        last-interest-update: uint,
+        active: bool
+    }
+)
+
+;; User Position Tracking
+(define-map user-positions
+    { user: principal }
+    {
+        total-collateral: uint,
+        total-borrowed: uint,
+        loan-count: uint
+    }
+)
+
+;; Private Functions
+;; Calculate Interest
+(define-private (calculate-interest (principal uint) (rate uint) (blocks uint))
+    (let (
+        (interest-per-block (/ (* principal rate) u10000))
+        (total-interest (* interest-per-block blocks))
+    )
+    total-interest)
+)
